@@ -16,37 +16,18 @@ class HydroponicPlatform:
         #setting light pin output to 1
         if curInput == 1:
             return 0
-        elif curInput == 0:
-            return 1
         else:
-            return 2
+            return 1
 
     def senseToAdjustLight(self, lightValue):
         if lightValue >= 10:
             return 0
-        elif lightValue < 10:
-            return 1
         else:
-            return 2
+            return 1
         
     def checkForFert(self, daysPassed, fertInterval):
         if daysPassed >= fertInterval:
             return 1
-        elif daysPassed < fertInterval:
-            return 0
         else:
-            return 2
-    
+            return 0
 
-
-
-
-
-
-
-
-
-
-
-
-        
