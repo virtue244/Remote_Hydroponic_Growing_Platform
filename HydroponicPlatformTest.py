@@ -20,7 +20,7 @@ class HydroponicPlatformTest (unittest.TestCase):
         self.assertTrue(self.x.flipTowerLight(0))
 
     def test_flipTowerLightOff(self):
-        self.assertTrue(self.x.flipTowerLight(0))
+        self.assertFalse(self.x.flipTowerLight(1))
 
     #Test number 2.2.2 - 3
     def test_senseToAdjustLightUp(self):
