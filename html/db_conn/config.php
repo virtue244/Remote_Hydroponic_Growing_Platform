@@ -1,7 +1,7 @@
 <?php
 $db_host='localhost';
-$db_user='dylan';
-$db_pass='raspberry';
+$db_user='root';
+$db_pass='Okmijn1029';
 $db_name='mydb';
 $errors = array();
 $forgot_password_errors = array();

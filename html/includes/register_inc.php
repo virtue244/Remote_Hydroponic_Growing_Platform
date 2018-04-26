@@ -6,12 +6,13 @@ if (isset($_POST['reg_user'])) {
   // receive all input values from the form
   $username = $_POST['username'];
   $email = $_POST['email'];
+  $product_id = $_POST['product_id'];
   $password_1 = $_POST['password_1'];
   $password_2 = $_POST['password_2'];
 
   // form validation: ensure that the form is correctly filled ...
   // by adding (array_push()) corresponding error unto $errors array
-if (empty($username) || empty($email) || empty($password_1) || empty($password_2)) 
+if (empty($username) || empty($email) || empty($product_id) || empty($password_1) || empty($password_2)) 
 {
   array_push($errors,"<div class='login_validation_alert'><strong>All Fields Required!</strong></div>");
 }else{
@@ -43,7 +44,13 @@ if (empty($username) || empty($email) || empty($password_1) || empty($password_2
                     {
                        array_push($errors,  "<div class='login_validation_alert'><strong>E-mail not valid!</strong></div>");  
                     }else{
-                          if(strlen($password_1) <= 5 && strlen($password_2) <= 5)
+                          $check_product_id = $db_conn->prepare("SELECT product_id FROM users WHERE product_id = ?");
+                          $check_product_id->execute([$product_id]);
+                          if($check_product_id->rowCount() == 1)
+                          {
+                            array_push($errors,  "<div class='login_validation_alert'><strong>The Product ID (<strong style='color: #000;'>".$product_id."</strong>) Has Already Been Used!</strong></div>");    
+                          }else{
+                              if(strlen($password_1) <= 5 && strlen($password_2) <= 5)
                                {
                             array_push($errors,  "<div class='login_validation_alert'><strong>Passwords too short!</strong></div>");  
                                }else{
@@ -55,48 +62,39 @@ if (empty($username) || empty($email) || empty($password_1) || empty($password_2
 
                                     $password = md5($password_1);//encrypt the password before saving in the database
                                     $user_type = "user";//register as normal user
-                                    $code = mt_rand();
+                                    $code = rand();
                                     $status = "not verified";
+                                    $user_rank = "Medium";
+                                    $user_integer_value = "30";
 
-                                    $stmt=$db_conn->prepare("INSERT INTO users( username, email, password, user_type, code, status, timestamp) VALUES (:myUsername, :myEmail, :myPass, :myUser, :myCode, :myStatus,  :myTime)");
+                                    $stmt=$db_conn->prepare("INSERT INTO users( username, email, product_id, password, user_type, code, status, user_rank, user_integer_value) VALUES (:myUsername, :myEmail, :myProductId, :myPass, :myUser, :myCode, :myStatus, :mySunlight, :myDays)");
                                     $stmt->bindParam(':myUsername', $username);
                                     $stmt->bindParam(':myEmail', $email);
+                                    $stmt->bindParam(':myProductId', $product_id);
                                     $stmt->bindParam(':myPass', $password);
                                     $stmt->bindParam(':myUser', $user_type);
                                     $stmt->bindParam(':myCode', $code);
                                     $stmt->bindParam(':myStatus', $status);
-                                    $stmt->bindValue(':myTime', time());
+                                    $stmt->bindParam(':mySunlight', $user_rank);
+                                    $stmt->bindParam(':myDays', $user_integer_value);
                                     $stmt->execute();
-
-                                    //Send code to the provided E-mail
-                                      if (isset($_REQUEST['reg_user'])) {
-                                        // Initialize error array.
-                                          $errors = array();
-
-                                          //Send the Email
-                                          if (isset($_REQUEST['reg_user'])) {
-                                          if (empty($errors)) { 
-                                          $from = "From: ANGEMOR.COM"; //Site name
-                                          // Change this to your email address you want the form sent to
-                                          // Example: $to = "jobgondwe@gmail.com"; 
-                                          $to = $email; 
-                                          $subject = "VERIFICATION CODE: " .$code. " ";
-                                          
-                                        //Message Delivery
-                                          $message = nl2br("Hello  "  .$username.  ", your VERIFICATION CODE is:  "  .$code.  " Please use the code to verify your account/subscription. ");
-                                          mail($to,$subject,$message,$from);
-                                          }
-                                        }
-                                        }
-                                        //END Send code to the provided E-mail
+                                    
+                                        $status = "verified";
+                                        $verify = $db_conn->prepare("UPDATE users SET  status = :verified, timestamp = :myTime WHERE product_id=$product_id");
+                                        $verify->bindParam(':verified', $status);
+                                        $verify->bindParam(':myTime', time());
+                                        $verify->execute();
 
                                          $_SESSION['username'] = $username;
                                          $_SESSION['email'] = $email;
-                                         $_SESSION['registered'] = "Hi " .$_SESSION['username'] ."! <u><em>VERIFICATION CODE</em></u> has been sent to " .$_SESSION['email'] .". Please use the code to verify yourself below. "; 
-                                         header('location: confirm_email');
+                                         $_SESSION['registered'] = "Welcome " .$_SESSION['username'] ."! You have been registered successfully!";  
+
+                                          header('location: index.php');
+                                         //header('location: confirm_email.php');
                                   }
                               }
                          }
+                          }
 
                  }
 
@@ -111,3 +109,6 @@ if (empty($username) || empty($email) || empty($password_1) || empty($password_2
 }
 
 // ... 
+
+
+           

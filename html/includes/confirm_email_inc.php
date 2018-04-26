@@ -44,7 +44,7 @@ session_start();
 
           $_SESSION['username'] = $username;
           $_SESSION['verified'] = "You have been registered and verified successfully! <br> You may now login using your credentials.";    
-            header('Location: login');
+            header('Location: login.php');
       }
       catch(PDOException $e)
       {

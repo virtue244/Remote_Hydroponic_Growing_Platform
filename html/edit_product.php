@@ -1,6 +1,6 @@
  <?php 
- session_start();
 include_once('db_conn/config.php');
+include_once('includes/edit_product_inc.php');
 
 
  if (isset($_GET['logout'])) {
@@ -61,7 +61,6 @@ include_once('db_conn/config.php');
           <?php }else{ ?>
           <?php  foreach ($db_conn->query("SELECT * FROM users WHERE username ='{$_SESSION['username']}'") as $row);
                     if($row['user_type'] == 'user'){?>
-            <li><a href="edit_product.php">Edit Settings</a></li>
             <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown"> <strong style="color: #001; cursor: pointer;">Hi <?php echo ucfirst($_SESSION['username']); ?></strong><span class="caret"></span></a>
               <ul class="dropdown-menu">
           <li><a href="includes/logout.php?logout='1'">Logout</a></li>
@@ -98,22 +97,57 @@ include_once('db_conn/config.php');
     <!-- registered  user information -->
 
 
-      <div class="row">
-        <div class="col-md-12">
-          <?php 
-             if (!isset($_SESSION['username'])) { ?>
-  <p>Please Sign in to View Your Account Info.</p>
-           <?php ?>
-          <?php }else{ ?>
-          <?php  foreach ($db_conn->query("SELECT * FROM users WHERE username ='{$_SESSION['username']}'") as $row);
-                    if($row['user_type'] == 'user'){?>
-          <p>Your product ID: <strong style="color: lightgreen;"><?php echo $row['product_id']; ?></strong></p>
-          <p>Sunlight: <strong style="color: lightgreen;"><?php echo $row['user_rank']; ?></strong></p>
-          <p>Fertilizer Interval: <strong style="color: lightgreen;"><?php echo $row['user_integer_value']; ?></strong></p><br>
-          <a href="edit_product.php" class="btn btn-success"><p>Update Your Settings</p></a>
-          <?php }} ?>
-        </div>
+          <form method="post" class="login_form animated slideInUp" action="edit_product.php" style="color: #000;" autocomplete="off">
+      <div class="login_header animated slideInUp">
+      <center>
+        <h2 align="center">Fertilizer Interval (Days)</h2></center><br>
+       <h3 align="center">Edit Settings</h3></center>
     </div>
+      <center>
+        <!-- notification message -->
+    <?php if (isset($_POST['code_verify'])){ ?>
+      <div class="error success">
+        <h3>
+          <?php 
+            echo $_SESSION['verified']; 
+            unset($_SESSION['verified']);
+          ?>
+        </h3>
+      </div>
+    <?php }else{ if (isset($_SESSION['new_password_verified'])){ ?>
+
+      <div class="error success">
+        <h3>
+          <?php 
+            echo $_SESSION['new_password_verified']; 
+            unset($_SESSION['new_password_verified']);
+          ?>
+        </h3>
+      </div>
+    <?php }} ?>
+
+    <!-- logged in user information -->
+    <!-- Display Validation Here -->
+    <?php include_once('includes/errors.php'); ?><br>
+    <?php  foreach ($db_conn->query("SELECT * FROM users WHERE username ='{$_SESSION['username']}'") as $row);
+                    if($row['user_type'] == 'user'){?>
+         <div class="form-group">
+            <label style="float: left !important;">Sunlight:</label>
+            <select name="user_rank" class="form-control">
+            <option selected data-default><?php echo $row['user_rank']; ?></option>
+            <option>Low</option>
+            <option>Medium</option>
+            <option>High</option>
+          </select>
+         </div>
+         <div class=" form-group">
+          <input type="text" class="form-control" name="user_integer_value" placeholder="Fertilizer Interval (1+)" value="<?php echo $row['user_integer_value']; ?>">
+         </div>
+         <?php } ?>
+         <div class=" form-group">
+          <button type="submit" name="edit_product" class="btn btn-success custom_btn">Update</button><br>
+        </div></center>
+      </form>
 </div>
 </section>
 

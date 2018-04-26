@@ -5,7 +5,6 @@ session_start();
 if (isset($_POST['login_user'])) {
   $username = $_POST['username'];
   $password = $_POST['password'];
-  $status = $_POST['status'];
   
 
   if (empty($username) || empty($password)) 
@@ -39,20 +38,28 @@ if (isset($_POST['login_user'])) {
                       $num = $stmt->rowCount();
                   
                   if ($num == 1){
-                  $_SESSION['username'] = $username;
-                   foreach ($db_conn->query("SELECT * FROM users WHERE username ='{$_SESSION['username_two']}'") as $row);
+                   $_SESSION['username'] = $username;
+                   $status = "not verified";
+                   foreach ($db_conn->query("SELECT * FROM users WHERE username ='{$_SESSION['username']}' AND status ='$status'") as $row);
+                    if($row['status'] == 'not verified')
+                  {
+                  header("Location: confirm_email.php");
+                  }else{
+                    $_SESSION['username'] = $username;
+                   foreach ($db_conn->query("SELECT * FROM users WHERE username ='{$_SESSION['username']}'") as $row);
                     if($row['user_type'] == 'subscriber')
                   {
-                  header("Location: index");
+                  header("Location: index.php");
                   }else{
                     $_SESSION['username'] = $username;
                   foreach ($db_conn->query("SELECT * FROM users WHERE username ='{$_SESSION['username']}'") as $row);
                   if($row['user_type'] == 'admin')
                   {
                     $_SESSION['success'] = "Welcome ".ucfirst($row['username']).", you are now logged in as ".ucfirst($row['user_type'])."!";
-                  header("Location: admin/index");
+                  header("Location: admin/index.php");
                   }else{
-                    header("Location: index");
+                    header("Location: index.php");
+                  }
                   }
                   }
                 }
@@ -62,10 +69,6 @@ if (isset($_POST['login_user'])) {
 }
 //../LOGIN USER... 
 
-
-
-
-                  
 
 
 

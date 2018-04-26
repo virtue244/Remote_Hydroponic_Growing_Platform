@@ -8,7 +8,7 @@ include_once'includes/confirm_email_inc.php';
 <html>
 <head>
 	<meta charset="utf-8">
-	<title>Code Verification</title>
+	<title>CODE VERIFICATION</title>
    <link rel="stylesheet" href="admin/css/style.css">
   <link href="tools/css/bootstrap.css" rel="stylesheet">
   <link rel="stylesheet" href="admin/fonts/font-awesome-4.7.0/css/font-awesome.min.css">
@@ -19,14 +19,15 @@ include_once'includes/confirm_email_inc.php';
 <body>
 
 <div class="container" style="margin-top: 50px;">
-  <div class="login_header animated slideInUp">
-      <a href="index" title="Go to Home Page"><span class="glyphicon glyphicon-home" aria-hidden="true"></span> </a>
-      <center><h2>E-mail Verification</h2></center>
-    </div>
+  
 
 					
 				<center>
-				<form method="post" class="login_form" action="confirm_email" >
+				<form method="post" class="login_form" action="confirm_email.php" style="color: #000;">
+          <div class="login_header animated slideInUp">
+      <a href="index.php" title="Go to Home Page"><span class="glyphicon glyphicon-home" aria-hidden="true"></span> </a>
+      <center><h2>E-mail Verification</h2></center>
+    </div>
 
 <!-- registered  user notification message -->
     <?php if (isset($_SESSION['registered'])) : ?>
