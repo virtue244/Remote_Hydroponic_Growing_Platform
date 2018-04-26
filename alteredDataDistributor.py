@@ -4,8 +4,8 @@ import MySQLdb
 #establish DB connection
 def connectToDB():
     db = MySQLdb.connect(host="localhost",  # hostname
-                     user="dylan",          # username
-                     passwd="raspberry",    # password
+                     user="root",          # username
+                     passwd="Okmijn1029",    # password
                      db="mydb")             # name of the data base
     return db
 
@@ -44,13 +44,21 @@ while 1:
     (clientSocket, address) = serverSocket.accept()
     word = clientSocket.recv(100)
     print word
-    
-    db = connectToDB()
-    db.autocommit(True)
+    try:
+        
+        db = connectToDB()
+        db.autocommit(True)
 
-    c = db.cursor()
-    c.execute("select * from schedule where days = 'Mon'")
-    arr = c.fetchone()
-    
-    clientSocket.send("Next fertilizing scheduled for 3/22/2018 at " + arr[2])
+        c = db.cursor()
+        sqlStatement = "select * from users where product_id = '" + word + "'"
+        c.execute(sqlStatement)
+        arr = c.fetchone()
+        try:
+            '''(uvX,fertInt)'''
+            clientSocket.send(arr[3] + ',' + str(arr[4]))
+        except:
+            print("Failed to send message")
+    except:
+        clientSocket.send("Invalid Data")
+        print("Invalid Data Recieved")
     clientSocket.close()
